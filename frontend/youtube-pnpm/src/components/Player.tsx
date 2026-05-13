@@ -1,4 +1,10 @@
-export default function Player({ video }) {
+import type { Video } from '../types'
+
+interface PlayerProps {
+  video: Video
+}
+
+export default function Player({ video }: PlayerProps) {
   return (
     <section className="flex flex-col gap-2">
       <video key={video.id} controls className="w-full rounded-xl bg-black aspect-video">
@@ -10,7 +16,9 @@ export default function Player({ video }) {
       )}
       <p className="text-mist-500 text-xs">
         {new Date(video.created_at).toLocaleDateString('es-EC', {
-          year: 'numeric', month: 'long', day: 'numeric'
+          year: 'numeric',
+          month: 'long',
+          day: 'numeric',
         })}
       </p>
     </section>

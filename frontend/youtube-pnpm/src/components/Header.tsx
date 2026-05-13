@@ -1,19 +1,24 @@
-import { AiOutlineMenu } from "react-icons/ai"
-import { FaYoutube } from "react-icons/fa"
-import { FaMagnifyingGlass } from "react-icons/fa6"
-import { GrMicrophone } from "react-icons/gr"
-import { IoAdd } from "react-icons/io5"
-import { GoBell } from "react-icons/go"
+import { AiOutlineMenu } from 'react-icons/ai'
+import { FaYoutube } from 'react-icons/fa'
+import { FaMagnifyingGlass } from 'react-icons/fa6'
+import { GrMicrophone } from 'react-icons/gr'
+import { IoAdd } from 'react-icons/io5'
+import { GoBell } from 'react-icons/go'
+import { useAuth } from '../context/AuthContext'
 
-const DEFAULT_PHOTO = 'https://aws-youtube-lis-contenidos.s3.us-west-1.amazonaws.com/perfil/Wi3.jpg'
+interface HeaderProps {
+  busqueda: string
+  onBusqueda: (v: string) => void
+  setVista: (v: string) => void
+}
 
-export default function Header({
-  usuario, onLogin, onPerfil, onCrear, onHome, busqueda, onBusqueda
-}) {
+export default function Header({ busqueda, onBusqueda, setVista }: HeaderProps) {
+  const { usuario } = useAuth()
+
   return (
     <header className="flex justify-between items-center w-full h-[40px] mb-4">
-
-      <div className="flex items-center gap-3 cursor-pointer" onClick={onHome}>
+      {/* Logo */}
+      <div className="flex items-center gap-3 cursor-pointer" onClick={() => setVista('home')}>
         <button className="text-white p-2 rounded-full flex justify-center items-center w-[40px] h-[40px] hover:bg-mist-800">
           <AiOutlineMenu className="w-6 h-6" />
         </button>
@@ -23,6 +28,7 @@ export default function Header({
         </div>
       </div>
 
+      {/* Buscador */}
       <div className="flex gap-10">
         <div className="flex items-center border border-mist-800 rounded-full overflow-hidden w-[500px] bg-mist-950">
           <input
@@ -41,31 +47,43 @@ export default function Header({
         </button>
       </div>
 
+      {/* Acciones */}
       <div className="flex gap-5 items-center">
         {usuario && (
-          <div onClick={onCrear}
-            className="flex items-center gap-2 border border-mist-800 rounded-full overflow-hidden px-3 py-2 bg-mist-950 cursor-pointer hover:bg-mist-900">
+          <div
+            onClick={() => setVista('crear')}
+            className="flex items-center gap-2 border border-mist-800 rounded-full px-3 py-2 bg-mist-950 cursor-pointer hover:bg-mist-900"
+          >
             <IoAdd className="h-5 w-5 text-white" />
-            <h3 className="text-white font-medium text-sm pb-0.5">Crear</h3>
+            <span className="text-white font-medium text-sm pb-0.5">Crear</span>
           </div>
         )}
-
-        <button className="text-white p-2 rounded-full justify-center items-center w-[40px] h-[40px] hover:bg-mist-800 cursor-pointer">
+        <button className="text-white p-2 rounded-full w-[40px] h-[40px] hover:bg-mist-800 cursor-pointer">
           <GoBell className="w-5 h-5" />
         </button>
-
         {usuario ? (
-          <button onClick={onPerfil}
-            className="w-[40px] h-[40px] rounded-full overflow-hidden hover:opacity-80 cursor-pointer flex-shrink-0">
-            <img
-              src={usuario?.profile_picture_url || DEFAULT_PHOTO}
-              alt={usuario?.username}
-              className="w-full h-full object-cover"
-            />
+          <button
+            onClick={() => setVista('perfil')}
+            className="w-[40px] h-[40px] rounded-full overflow-hidden hover:opacity-80 cursor-pointer flex-shrink-0"
+          >
+            {usuario.profile_picture_url ? (
+              <img
+                src={usuario.profile_picture_url}
+                alt={usuario.username}
+                className="w-full h-full object-cover"
+              />
+            ) : (
+              // Fallback: iniciales del usuario si no hay foto
+              <div className="w-full h-full bg-blue-600 flex items-center justify-center text-white text-sm font-bold">
+                {usuario.username.charAt(0).toUpperCase()}
+              </div>
+            )}
           </button>
         ) : (
-          <button onClick={onLogin}
-            className="border border-blue-500 text-blue-400 text-sm px-4 py-2 rounded-full hover:bg-blue-500 hover:text-white transition-colors">
+          <button
+            onClick={() => setVista('login')}
+            className="border border-blue-500 text-blue-400 text-sm px-4 py-2 rounded-full hover:bg-blue-500 hover:text-white transition-colors"
+          >
             Entrar
           </button>
         )}
