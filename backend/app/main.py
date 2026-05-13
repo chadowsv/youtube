@@ -13,8 +13,8 @@ app=FastAPI(title="Youtube",lifespan=lifespan)
 
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["http://localhost:5173","http://3.101.130.22","http://3.101.130.22:8000"],
-    allow_credentials=True,
+    allow_origins=["]"],
+    allow_credentials=False,
     allow_methods=["*"],
     allow_headers=["*"]    
 )

@@ -12,14 +12,17 @@ class CommentPublic(SQLModel):
     video_id: int
     user_id: int
     username: str = ""
-router = APIRouter()
 
 class CommentCreate(SQLModel):
     content: str
     video_id: int
     user_id: int
 
-# Comentarios de un video
+class CommentUpdate(SQLModel):
+    content: str
+
+router = APIRouter()
+
 @router.get("/video/{video_id}")
 def get_comments(video_id: int, session: Session = Depends(get_session)):
     comments = session.exec(select(Comment).where(Comment.video_id == video_id)).all()
@@ -27,15 +30,12 @@ def get_comments(video_id: int, session: Session = Depends(get_session)):
     for c in comments:
         user = session.get(User, c.user_id)
         result.append(CommentPublic(
-            id=c.id,
-            content=c.content,
-            created_at=c.created_at,
-            video_id=c.video_id,
-            user_id=c.user_id,
+            id=c.id, content=c.content, created_at=c.created_at,
+            video_id=c.video_id, user_id=c.user_id,
             username=user.username if user else "Usuario"
         ))
     return result
-# Crear comentario
+
 @router.post("/")
 def create_comment(comment_data: CommentCreate, session: Session = Depends(get_session)):
     comment = Comment(**comment_data.model_dump())
@@ -44,18 +44,17 @@ def create_comment(comment_data: CommentCreate, session: Session = Depends(get_s
     session.refresh(comment)
     return comment
 
-# Editar comentario
-@router.patch("/{comment_id}")
-def update_comment(comment_id: int, content: str, session: Session = Depends(get_session)):
+@router.put("/{comment_id}")
+def update_comment(comment_id: int, data: CommentUpdate, session: Session = Depends(get_session)):
     comment = session.get(Comment, comment_id)
     if not comment:
         raise HTTPException(status_code=404, detail="Comentario no encontrado")
-    comment.content = content
+    comment.content = data.content
+    session.add(comment)
     session.commit()
     session.refresh(comment)
     return comment
 
-# Eliminar comentario
 @router.delete("/{comment_id}")
 def delete_comment(comment_id: int, session: Session = Depends(get_session)):
     comment = session.get(Comment, comment_id)

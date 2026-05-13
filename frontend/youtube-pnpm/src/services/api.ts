@@ -1,4 +1,4 @@
-const API = 'http://3.101.130.22:8000/api'
+const API = 'http://34.205.28.202:8000/api'
 
 // ── Videos ──────────────────────────────────────────────
 export const getVideos = () =>
